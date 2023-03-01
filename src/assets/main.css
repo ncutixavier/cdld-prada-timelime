@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+    font-family: BentonSans;
+    font-weight: 400;
+    src: url("./fonts/BentonSansMedium.otf") format("opentype");
+}
+
+@font-face {
+    font-family: BentonSans;
+    font-weight: 700;
+    src: url("./fonts/BentonSansBold.otf") format("opentype");
+}
+
