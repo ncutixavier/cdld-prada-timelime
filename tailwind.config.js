@@ -2,7 +2,19 @@
 module.exports = {
   content: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx}"],
   theme: {
-    extend: {},
+    extend: {
+      keyframes: {
+        fadeInBottom: {
+          "0%": { opacity: 0 },
+          "100%": { opacity: 1 },
+        },
+        flash: {
+          "25%, 40%": { opacity: "0" },
+          "50%": { opacity: "1" },
+          "75%": { opacity: "0" },
+        },
+      },
+    },
     fontFamily: {
       BentonSans: ["BentonSans, sans-serif"],
     },

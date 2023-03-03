@@ -1,25 +1,13 @@
 <template>
   <div class="timeline-left-panel">
-    <div class="h-[584px] sm:h-[413px] xs:h-[466px] relative">
-      <img
-        :src="imageTablet"
-        alt=""
-        v-if="breakpoints.tablet.matches"
-        class="object-cover h-full w-full"
-      />
-      <img
-        :src="imageMobile"
-        alt=""
-        v-else-if="breakpoints.mobile.matches"
-        class="object-cover h-full w-full"
-      />
-      <img
-        :src="imageDesktop"
-        v-else-if="breakpoints.desktop.matches"
-        alt=""
-        class="object-cover h-full w-full"
-      />
-      <div class="absolute top-0 px-2 pt-5 pb-4 w-full">
+    <div class="md:h-[584px] sm:h-[413px] xs:h-[466px] relative">
+      <div
+        class="h-full w-full bg-no-repeat bg-cover bg-center"
+        :style="{
+          backgroundImage: `url(${getImageDependOnDevice()})`,
+        }"
+      ></div>
+      <div class="absolute top-0 w-full">
         <slot />
       </div>
     </div>
@@ -38,14 +26,26 @@ export default defineComponent({
     imageTablet: { type: String, required: true },
   },
 
-  setup() {
+  setup(props) {
     const breakpoints = useBreakpoints({
       mobile: 425,
-      tablet: 768,
+      tablet: [426, 768],
       desktop: [769],
     });
 
-    return { breakpoints };
+    const getImageDependOnDevice = () => {
+      if (breakpoints.mobile.matches) {
+        return props.imageMobile;
+      }
+      if (breakpoints.tablet.matches) {
+        return props.imageTablet;
+      }
+      if (breakpoints.desktop.matches) {
+        return props.imageDesktop;
+      }
+    };
+
+    return { breakpoints, getImageDependOnDevice };
   },
 });
 </script>
