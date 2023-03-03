@@ -1,34 +1,51 @@
 <template>
   <div class="timeline-left-panel">
-    <div class="h-[584px]">
-      <div
-        :class="`w-full h-full bg-cover
-            xs:bg-[url(https://dev3.prada.com/content/dam/pradanux/menu_official_assets/mobile/highlights_bags/bag_1.jpg)]
-            sm:bg-[url(https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8ZmFzaGlvbnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60)]
-            md:bg-[url(https://dev3.prada.com/content/dam/pradanux/menu_official_assets/desktop/bags/bag_1.jpg)]
-        `"
-      ></div>
+    <div class="h-[584px] sm:h-[413px] xs:h-[466px] relative">
+      <img
+        :src="imageTablet"
+        alt=""
+        v-if="breakpoints.tablet.matches"
+        class="object-cover h-full w-full"
+      />
+      <img
+        :src="imageMobile"
+        alt=""
+        v-else-if="breakpoints.mobile.matches"
+        class="object-cover h-full w-full"
+      />
+      <img
+        :src="imageDesktop"
+        v-else-if="breakpoints.desktop.matches"
+        alt=""
+        class="object-cover h-full w-full"
+      />
+      <div class="absolute top-0 px-2 pt-5 pb-4 w-full">
+        <slot />
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import breakpoint from "@/plugins/breakpoint";
-import { defineComponent, reactive, watchEffect } from "vue";
+import { defineComponent } from "vue";
+import useBreakpoints from "vue-next-breakpoints";
 
 export default defineComponent({
   name: "TimelineLeftPanel",
+  props: {
+    imageDesktop: { type: String, required: true },
+    imageMobile: { type: String, required: true },
+    imageTablet: { type: String, required: true },
+  },
 
   setup() {
-    const state = reactive({
-      screens: {},
+    const breakpoints = useBreakpoints({
+      mobile: 425,
+      tablet: 768,
+      desktop: [769],
     });
-    watchEffect(() => {
-      window.addEventListener("resize", () => {
-        state.screens = breakpoint();
-      });
-    });
-    return { state };
+
+    return { breakpoints };
   },
 });
 </script>

@@ -30,7 +30,7 @@ export default {
         "https://dev3.prada.com/content/dam/pradanux/menu_official_assets/mobile/highlights_bags/bag_1.jpg",
       alt: "timeline image",
       enableShadowMobile: true,
-      enableInsideTitleMobile: true,
+      enableInsideTitleMobile: false,
     },
     {
       slideTitle: "1999",
