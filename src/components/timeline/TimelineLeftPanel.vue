@@ -1,12 +1,16 @@
 <template>
   <div class="timeline-left-panel">
     <div class="sm:h-[584px] xs:h-[466px] relative">
-      <img
-        :src="getImageDependOnDevice()"
-        alt=""
-        srcset=""
-        class="h-full w-full object-cover object-top lg:object-center"
-      />
+      <picture>
+        <source media="(max-width:425px)" :srcset="imageMobile" />
+        <source media="(max-width: 768px)" :srcset="imageTablet" />
+        <img
+          :src="imageDesktop"
+          alt=""
+          class="h-full w-full object-cover object-center"
+        />
+      </picture>
+
       <div class="absolute top-0 w-full">
         <slot />
       </div>
@@ -16,7 +20,6 @@
 
 <script>
 import { defineComponent } from "vue";
-import { breakpoint } from "@/plugins/breakpoint";
 
 export default defineComponent({
   name: "TimelineLeftPanel",
@@ -26,22 +29,6 @@ export default defineComponent({
     imageTablet: { type: String, required: true },
   },
 
-  setup(props) {
-
-    const getImageDependOnDevice = () => {
-      if (breakpoint.mobile.matches) {
-        return props.imageMobile;
-      }
-      if (breakpoint.tablet.matches) {
-        return props.imageTablet;
-      }
-      if (breakpoint.desktop.matches) {
-        return props.imageDesktop;
-      }
-    };
-
-    return { getImageDependOnDevice };
-  },
 });
 </script>
 

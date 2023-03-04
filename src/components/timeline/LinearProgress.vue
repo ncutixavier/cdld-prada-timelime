@@ -21,7 +21,7 @@ export default {
   props: {
     isActive: { type: Boolean, default: false },
     activeColor: { type: String, default: "bg-black" },
-    inactiveColor: { type: String, default: "bg-gray-200" },
+    inactiveColor: { type: String, default: "bg-gray-300" },
     progressTime: { type: Number, default: 6000 },
   },
 
