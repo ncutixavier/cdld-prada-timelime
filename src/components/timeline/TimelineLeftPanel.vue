@@ -1,6 +1,6 @@
 <template>
   <div class="timeline-left-panel">
-    <div class="sm:h-[584px] xs:h-[466px] lg:h-[684px] relative">
+    <div class="sm:h-[584px] xs:h-[466px] relative">
       <img
         :src="getImageDependOnDevice()"
         alt=""
