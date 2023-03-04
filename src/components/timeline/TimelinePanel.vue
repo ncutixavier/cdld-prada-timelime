@@ -22,7 +22,7 @@
         :key="n"
       >
         <div
-          class="sm:bg-white bg-[#e5e5e5] w-[90%] min-h-[680px] mx-auto grid sm:grid-cols-2"
+          class="xs:w-[90%] sm:w-[90%] w-[80%] mx-auto grid sm:grid-cols-2"
           :style="setContainerStyles()"
         >
           <div>
@@ -33,17 +33,21 @@
             >
               <div class="hidden xs:block">
                 <div class="flex justify-between items-center pt-5 pb-4 px-4">
-                  <div
-                    v-for="p in timelines?.timelineSlides?.length"
-                    v-bind:key="p"
-                    class="h-[2px] bg-black opacity-30"
-                    :style="`width: ${state.progressWidth}%;${
-                      p === n + 1 ? 'opacity: 1' : 'opacity: 0.3'
-                    };background: ${setTimelineColor()}`"
-                  ></div>
+                  <LinearProgress
+                    :style="`width: ${state.progressWidth}%;`"
+                    v-for="(t, index) in timelines?.timelineSlides"
+                    v-bind:key="index"
+                    :is-active="index === activeIndex"
+                    :progress-time="
+                      t.singleSlideTiming > 0
+                        ? t.singleSlideTiming * 1000
+                        : timelines.slideGeneralTiming * 1000
+                    "
+                    :activeColor="setTimelineColor()"
+                  />
                 </div>
                 <TimelineTitle
-                  class="px-2"
+                  class="px-2 year-mobile"
                   v-if="timeline.enableInsideTitleMobile"
                   :title="timeline.slideTitle"
                   :titleColorDesktop="timelines.titleColorDesktop"
@@ -55,15 +59,20 @@
 
           <div class="sm:pl-[79px] sm:pr-[59px] relative">
             <div class="hidden sm:flex justify-between items-center">
-              <div
-                v-for="p in timelines?.timelineSlides?.length"
-                v-bind:key="p"
-                class="h-[2px] bg-black relative opacity-30"
-                :style="`width: ${state.progressWidth}%;${
-                  p === n + 1 ? 'opacity:1' : 'opacity:0.3'
-                };background: ${setTimelineColor()}`"
-              ></div>
+              <LinearProgress
+                :style="`width: ${state.progressWidth}%;`"
+                v-for="(t, index) in timelines?.timelineSlides"
+                v-bind:key="index"
+                :is-active="index === activeIndex"
+                :progress-time="
+                  t.singleSlideTiming > 0
+                    ? t.singleSlideTiming * 1000
+                    : timelines.slideGeneralTiming * 1000
+                "
+                :activeColor="setTimelineColor()"
+              />
             </div>
+
             <!-- display only on mobile if not enabled inside -->
             <TimelineTitle
               v-if="!timeline.enableInsideTitleMobile"
@@ -76,7 +85,7 @@
             <!-- display from tablet -->
             <TimelineTitle
               :title="timeline.slideTitle"
-              class="hidden sm:flex"
+              class="hidden sm:flex year"
               :titleColorDesktop="timelines.titleColorDesktop"
               :titleColorTabletMobile="timelines.titleColorTabletMobile"
             />
@@ -119,6 +128,7 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import "swiper/css/effect-fade";
 import { breakpoint } from "@/plugins/breakpoint";
+import LinearProgress from "./LinearProgress";
 
 export default defineComponent({
   components: {
@@ -127,17 +137,19 @@ export default defineComponent({
     TimelineIconButton,
     Swiper,
     SwiperSlide,
+    LinearProgress,
   },
 
   props: {
     timelines: Object,
+    autoplay: { type: Boolean, default: true },
   },
 
   setup(props) {
-    const progress = ref(
-      Array.from({ length: props.timelines?.timelineSlides?.length }, () => 0)
-    );
-
+    // const progress = ref(
+    //   Array.from({ length: props.timelines?.timelineSlides?.length }, () => 0)
+    // );
+    const activeIndex = ref(0);
     const state = reactive({
       progressWidth: 0,
       swiper: null,
@@ -151,8 +163,23 @@ export default defineComponent({
     watchEffect(() => {
       if (state.swiper) {
         const swiper = document.querySelector(".swiper").swiper;
-        swiper.on("slideChange", function (e) {
-          console.log("*** swiper.activeIndex", e, swiper.realIndex);
+        swiper.on("slideChange", (slide) => {
+          activeIndex.value = swiper.realIndex;
+          let timelineTitle, prevTimelineTitle;
+          let currentSlide = slide?.slides[activeIndex.value];
+          let previousSlide = slide?.slides[activeIndex.value - 1];
+
+          if (breakpoint.mobile.matches) {
+            timelineTitle = currentSlide?.querySelector(".year-mobile");
+            prevTimelineTitle = previousSlide?.querySelector(".year-mobile");
+          } else {
+            timelineTitle = currentSlide?.querySelector(".year");
+            prevTimelineTitle = previousSlide?.querySelector(".year");
+          }
+
+          timelineTitle?.classList.remove("animate-slide");
+          timelineTitle?.classList.add("animate-slide");
+          prevTimelineTitle?.classList.remove("animate-slide");
         });
       }
     });
@@ -174,17 +201,17 @@ export default defineComponent({
     const setContainerStyles = () => {
       if (breakpoint.mobile.matches) {
         return `
-          padding-top: ${props.timelines.marginTopMobile}px; 
-          padding-bottom: ${props.timelines.marginBottomMobile}px; 
+          padding-top: ${props.timelines.marginTopMobile}px;
+          padding-bottom: ${props.timelines.marginBottomMobile}px;
           background: ${props.timelines.backgroundColorTabletMobile}`;
       } else if (breakpoint.tablet.matches) {
         return `
-          padding-top: ${props.timelines.marginTopTablet}px; 
+          padding-top: ${props.timelines.marginTopTablet}px;
           padding-bottom: ${props.timelines.marginBottomTablet}px;
           background: ${props.timelines.backgroundColorTabletMobile}`;
       } else {
         return `
-          padding-top: ${props.timelines.marginTop}px; 
+          padding-top: ${props.timelines.marginTop}px;
           padding-bottom: ${props.timelines.marginBottom}px;
           background: ${props.timelines.backgroundColorDesktop}`;
       }
@@ -210,13 +237,26 @@ export default defineComponent({
       handlePrev,
       modules: [EffectFade, Autoplay, Pagination],
       state,
-      progress,
       setTextColor,
       setContainerStyles,
       setTimelineColor,
+      activeIndex,
     };
   },
 });
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+@keyframes slide {
+  from {
+    opacity: 0;
+    transform: translateY(-30%);
+  }
+  to {
+    opacity: 1;
+  }
+}
+.animate-slide {
+  animation: slide 1s ease-in;
+}
+</style>

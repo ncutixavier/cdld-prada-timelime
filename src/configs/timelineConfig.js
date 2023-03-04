@@ -7,7 +7,7 @@ export default {
   textColorDesktop: "#000",
   textColorTabletMobile: "#000",
   arrowsColorDesktop: "#000",
-  timelineColorDesktop: "#000",
+  timelineColorDesktop: "red",
   timelineColorTabletMobile: "#000",
   marginTop: "48",
   marginBottom: "48",
