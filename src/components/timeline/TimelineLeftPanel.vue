@@ -1,11 +1,11 @@
 <template>
   <div class="timeline-left-panel">
-    <div class="sm:h-[584px] xs:h-[466px] relative">
+    <div class="sm:h-[584px] xs:h-[466px] lg:h-[684px] relative">
       <img
         :src="getImageDependOnDevice()"
         alt=""
         srcset=""
-        class="h-full w-full object-cover"
+        class="h-full w-full object-cover object-top lg:object-center"
       />
       <div class="absolute top-0 w-full">
         <slot />
