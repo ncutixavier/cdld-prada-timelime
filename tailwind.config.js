@@ -23,6 +23,7 @@ module.exports = {
       sm: { min: "426px" },
       md: { min: "769px" },
       lg: { min: "1440px" },
+      xl: { min: "2560px" },
     },
   },
   plugins: [],
