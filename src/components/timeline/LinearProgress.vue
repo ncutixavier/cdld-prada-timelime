@@ -1,14 +1,18 @@
 <template>
-  <div
-    class="relative h-[2px] rounded-full"
-    :class="inactiveColor"
-  >
+  <div class="relative h-[2px] rounded-full bg-gray-300">
+    <div
+      class="h-full rounded-full transition-all"
+      :style="{
+        backgroundColor: activeColor,
+        opacity: isViewed ? 1 : 0.3,
+      }"
+    ></div>
+
     <div
       class="absolute top-0 left-0 h-full rounded-full transition-all"
-      :class="activeColor"
       :style="{
         width: `${progress}%`,
-        backgroundColor: activeColor
+        backgroundColor: activeColor,
       }"
     ></div>
   </div>
@@ -20,8 +24,8 @@ import { ref, watch, onMounted, onUnmounted } from "vue";
 export default {
   props: {
     isActive: { type: Boolean, default: false },
-    activeColor: { type: String, default: "bg-black" },
-    inactiveColor: { type: String, default: "bg-gray-300" },
+    isViewed: { type: Boolean, default: false },
+    activeColor: { type: String, default: "#000000" },
     progressTime: { type: Number, default: 6000 },
   },
 

@@ -1,7 +1,9 @@
-import useBreakpoints from "vue-next-breakpoints";
-
-export const breakpoint = useBreakpoints({
-  mobile: 425,
-  tablet: [426, 768],
-  desktop: [769],
-});
+export const screens = () => {
+  const screenWidth = window.innerWidth
+  console.log(screenWidth)
+  return {
+    mobile: screenWidth <= 425,
+    tablet: screenWidth > 425 && screenWidth <= 768,
+    desktop: screenWidth > 768,
+  };
+}

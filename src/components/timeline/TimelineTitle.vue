@@ -1,6 +1,6 @@
 <template>
   <div
-    class="text-[44px] font-bold sm:py-[26px] xs:px-4 xs:text-[20px]"
+    class="text-[44px] font-bold sm:py-[26px] xs:px-4 xs:text-[20px] leading-[48px] xs:leading-[24px]"
     :style="`color: ${setTitleColor()}`"
   >
     {{ title }}
@@ -8,8 +8,8 @@
 </template>
 
 <script>
-import { defineComponent } from "vue";
-import { breakpoint } from "@/plugins/breakpoint";
+import { defineComponent, watchEffect, ref } from "vue";
+import { screens } from "@/plugins/breakpoint";
 
 export default defineComponent({
   name: "TimelineTitle",
@@ -23,11 +23,19 @@ export default defineComponent({
   },
 
   setup(props) {
+    const breakpoints = ref();
+
+    watchEffect(() => {
+      window.addEventListener("resize", () => {
+        breakpoints.value = screens();
+      });
+    });
+
     const setTitleColor = () => {
-      if (breakpoint.mobile.matches || breakpoint.tablet.matches) {
+      if (breakpoints.value?.mobile || breakpoints.value?.tablet) {
         return props.titleColorTabletMobile;
       }
-      if (breakpoint.desktop.matches) {
+      if (breakpoints.value?.desktop) {
         return props.titleColorDesktop;
       }
     };

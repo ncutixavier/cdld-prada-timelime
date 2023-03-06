@@ -10,9 +10,11 @@
       :autoplay="{
         disableOnInteraction: false,
       }"
+      rewind="true"
     >
       <SwiperSlide
         class="swiper-slide"
+        :style="setContainerColor()"
         v-for="(timeline, n) in timelines?.timelineSlides"
         :data-swiper-autoplay="
           timeline.singleSlideTiming > 0
@@ -21,20 +23,22 @@
         "
         :key="n"
       >
-        <div
-          class="xs:w-[90%] sm:w-[90%] w-[80%] mx-auto grid sm:grid-cols-2"
-          :style="setContainerStyles()"
-        >
+        <div class="grid sm:grid-cols-2" :style="setContainerSpacing()">
           <div>
             <TimelineLeftPanel
               :imageMobile="timeline.imageMobile"
               :imageDesktop="timeline.imageDesktop"
               :imageTablet="timeline.imageTablet"
+              :handleNext="handleNext"
+              :handlePrev="handlePrev"
+              :enableShadowMobile="timeline.enableShadowMobile"
             >
               <div class="hidden xs:block">
-                <div class="flex justify-between items-center pt-5 pb-4 px-4">
+                <div
+                  class="grid gap-0.5 pt-5 pb-4 px-4"
+                  :class="`grid-cols-${timelines?.timelineSlides.length}`"
+                >
                   <LinearProgress
-                    :style="`width: ${state.progressWidth}%;`"
                     v-for="(t, index) in timelines?.timelineSlides"
                     v-bind:key="index"
                     :is-active="index === activeIndex"
@@ -44,6 +48,8 @@
                         : timelines.slideGeneralTiming * 1000
                     "
                     :activeColor="setTimelineColor()"
+                    :isViewed="index < activeIndex"
+                    @click="navigateToSpecificSlide(index)"
                   />
                 </div>
                 <TimelineTitle
@@ -58,9 +64,11 @@
           </div>
 
           <div class="sm:pl-[79px] sm:pr-[59px] relative">
-            <div class="hidden sm:flex justify-between items-center">
+            <div
+              class="hidden sm:grid gap-1"
+              :class="`grid-cols-${timelines?.timelineSlides.length}`"
+            >
               <LinearProgress
-                :style="`width: ${state.progressWidth}%;`"
                 v-for="(t, index) in timelines?.timelineSlides"
                 v-bind:key="index"
                 :is-active="index === activeIndex"
@@ -70,6 +78,8 @@
                     : timelines.slideGeneralTiming * 1000
                 "
                 :activeColor="setTimelineColor()"
+                :isViewed="index < activeIndex"
+                @click="navigateToSpecificSlide(index)"
               />
             </div>
 
@@ -91,7 +101,7 @@
             />
 
             <div
-              class="xs:text-[14px] text-[16px] font-normal xs:h-[200px] h-[60%] overflow-auto xs:p-5"
+              class="xs:text-[14px] text-[16px] font-normal xs:h-[200px] h-[60%] overflow-auto xs:p-5 leading-[22px] xs:leading-[20px]"
               :style="`color: ${setTextColor()}`"
             >
               {{ timeline.slideText }}
@@ -127,7 +137,7 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import "swiper/css/effect-fade";
-import { breakpoint } from "@/plugins/breakpoint";
+import { screens } from "@/plugins/breakpoint";
 import LinearProgress from "./LinearProgress";
 
 export default defineComponent({
@@ -146,12 +156,9 @@ export default defineComponent({
   },
 
   setup(props) {
-    // const progress = ref(
-    //   Array.from({ length: props.timelines?.timelineSlides?.length }, () => 0)
-    // );
     const activeIndex = ref(0);
+    const breakpoints = ref();
     const state = reactive({
-      progressWidth: 0,
       swiper: null,
     });
 
@@ -160,7 +167,21 @@ export default defineComponent({
       swiper.slideNext();
     };
 
+    const handlePrev = () => {
+      const swiper = document.querySelector(".swiper").swiper;
+      swiper.slidePrev();
+    };
+
+    const navigateToSpecificSlide = (index) => {
+      const swiper = document.querySelector(".swiper").swiper;
+      swiper.slideTo(index);
+    };
+
     watchEffect(() => {
+      window.addEventListener("resize", () => {
+        breakpoints.value = screens();
+      });
+
       if (state.swiper) {
         const swiper = document.querySelector(".swiper").swiper;
         swiper.on("slideChange", (slide) => {
@@ -169,7 +190,7 @@ export default defineComponent({
           let currentSlide = slide?.slides[activeIndex.value];
           let previousSlide = slide?.slides[activeIndex.value - 1];
 
-          if (breakpoint.mobile.matches) {
+          if (breakpoints.value?.mobile) {
             timelineTitle = currentSlide?.querySelector(".year-mobile");
             prevTimelineTitle = previousSlide?.querySelector(".year-mobile");
           } else {
@@ -184,51 +205,53 @@ export default defineComponent({
       }
     });
 
-    const handlePrev = () => {
-      const swiper = document.querySelector(".swiper").swiper;
-      swiper.slidePrev();
-    };
-
     const setTextColor = () => {
-      if (breakpoint.mobile.matches || breakpoint.tablet.matches) {
+      if (breakpoints.value?.mobile || breakpoints.value?.tablet) {
         return props.timelines.textColorTabletMobile;
       }
-      if (breakpoint.desktop.matches) {
+      if (breakpoints.value?.desktop) {
         return props.timelines.textColorDesktop;
       }
     };
 
-    const setContainerStyles = () => {
-      if (breakpoint.mobile.matches) {
+    const setContainerSpacing = () => {
+      if (breakpoints.value?.mobile) {
         return `
-          padding-top: ${props.timelines.marginTopMobile}px;
-          padding-bottom: ${props.timelines.marginBottomMobile}px;
-          background: ${props.timelines.backgroundColorTabletMobile}`;
-      } else if (breakpoint.tablet.matches) {
+          margin-top: ${props.timelines.marginTopMobile}px;
+          margin-bottom: ${props.timelines.marginBottomMobile}px;`;
+      } else if (breakpoints.value?.tablet) {
         return `
-          padding-top: ${props.timelines.marginTopTablet}px;
-          padding-bottom: ${props.timelines.marginBottomTablet}px;
-          background: ${props.timelines.backgroundColorTabletMobile}`;
+          margin-top: ${props.timelines.marginTopTablet}px;
+          margin-bottom: ${props.timelines.marginBottomTablet}px;`;
       } else {
         return `
-          padding-top: ${props.timelines.marginTop}px;
-          padding-bottom: ${props.timelines.marginBottom}px;
-          background: ${props.timelines.backgroundColorDesktop}`;
+          margin-top: ${props.timelines.marginTop}px;
+          margin-bottom: ${props.timelines.marginBottom}px;`;
+      }
+    };
+
+    const setContainerColor = () => {
+      if (breakpoints.value?.mobile || breakpoints.value?.tablet) {
+        return {
+          backgroundColor: props.timelines.backgroundColorTabletMobile
+        }
+      } else {
+        return {
+          backgroundColor: props.timelines.backgroundColorDesktop
+        }
       }
     };
 
     const setTimelineColor = () => {
-      if (breakpoint.mobile.matches || breakpoint.tablet.matches) {
+      if (breakpoints.value?.mobile || breakpoints.value?.tablet) {
         return props.timelines.timelineColorTabletMobile;
       }
-      if (breakpoint.desktop.matches) {
+      if (breakpoints.value?.desktop) {
         return props.timelines.timelineColorDesktop;
       }
     };
 
     onMounted(() => {
-      state.progressWidth =
-        parseInt(100 / props.timelines?.timelineSlides?.length) - 3;
       state.swiper = document.querySelector(".swiper").swiper;
     });
 
@@ -238,9 +261,11 @@ export default defineComponent({
       modules: [EffectFade, Autoplay, Pagination],
       state,
       setTextColor,
-      setContainerStyles,
+      setContainerSpacing,
+      setContainerColor,
       setTimelineColor,
       activeIndex,
+      navigateToSpecificSlide,
     };
   },
 });
@@ -249,14 +274,17 @@ export default defineComponent({
 <style lang="scss" scoped>
 @keyframes slide {
   from {
+    -webkit-transform: translateY(30px);
+    transform: translateY(30px);
     opacity: 0;
-    transform: translateY(-30%);
   }
   to {
+    -webkit-transform: translateY(0);
+    transform: translateY(0);
     opacity: 1;
   }
 }
 .animate-slide {
-  animation: slide 1s ease-in;
+  animation: slide 0.3s ease-in;
 }
 </style>
