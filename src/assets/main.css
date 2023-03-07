@@ -14,3 +14,8 @@
   src: url("./fonts/BentonSansBold.otf") format("opentype");
 }
 
+@font-face {
+  font-family: BentonSans;
+  font-weight: 500;
+  src: url("./fonts/BentonSansRegular.otf") format("opentype");
+}
