@@ -35,10 +35,10 @@
             >
               <div class="hidden xs:block">
                 <div
-                  class="grid gap-0.5 pt-5 pb-4 px-4"
-                  :class="`grid-cols-${timelines?.timelineSlides.length}`"
+                  class="flex gap-0.5 pt-5 pb-4 px-4"
                 >
                   <LinearProgress
+                    :style="{ width: `${progressWidth}%` }"
                     v-for="(t, index) in timelines?.timelineSlides"
                     v-bind:key="index"
                     :is-active="index === activeIndex"
@@ -64,11 +64,9 @@
           </div>
 
           <div class="sm:pl-[79px] sm:pr-[59px] relative">
-            <div
-              class="hidden sm:grid gap-1"
-              :class="`grid-cols-${timelines?.timelineSlides.length}`"
-            >
+            <div class="hidden sm:flex gap-1">
               <LinearProgress
+                :style="{ width: `${progressWidth}%` }"
                 v-for="(t, index) in timelines?.timelineSlides"
                 v-bind:key="index"
                 :is-active="index === activeIndex"
@@ -156,6 +154,7 @@ export default defineComponent({
   },
 
   setup(props) {
+    const progressWidth = ref(0);
     const activeIndex = ref(0);
     const breakpoints = ref();
     const state = reactive({
@@ -233,12 +232,12 @@ export default defineComponent({
     const setContainerColor = () => {
       if (breakpoints.value?.mobile || breakpoints.value?.tablet) {
         return {
-          backgroundColor: props.timelines.backgroundColorTabletMobile
-        }
+          backgroundColor: props.timelines.backgroundColorTabletMobile,
+        };
       } else {
         return {
-          backgroundColor: props.timelines.backgroundColorDesktop
-        }
+          backgroundColor: props.timelines.backgroundColorDesktop,
+        };
       }
     };
 
@@ -253,6 +252,9 @@ export default defineComponent({
 
     onMounted(() => {
       state.swiper = document.querySelector(".swiper").swiper;
+      progressWidth.value = parseInt(
+        100 / props.timelines?.timelineSlides?.length
+      );
     });
 
     return {
@@ -266,6 +268,7 @@ export default defineComponent({
       setTimelineColor,
       activeIndex,
       navigateToSpecificSlide,
+      progressWidth,
     };
   },
 });
