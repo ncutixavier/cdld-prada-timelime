@@ -5,18 +5,18 @@
   >
     <div
       class="uppercase text-[12px] font-medium absolute top-0 hidden sm:flex pl-5 pt-5"
-      v-if="state.double.width === 75"
+      v-if="imageWidth === 75"
     >
       GIFT FOR HER
     </div>
 
     <div
-      :class="state.double.width === 50 ? 'sm:pl-[120px]' : 'sm:pl-5'"
+      :class="imageWidth === 50 ? 'sm:pl-[120px]' : 'sm:pl-5'"
       class="sm:py-5 xs:px-2 xs:w-full xs:text-center"
     >
       <div
         class="uppercase text-[12px] font-medium hidden sm:flex"
-        v-if="state.double.width === 50"
+        v-if="imageWidth === 50"
       >
         GIFT FOR HER
       </div>
@@ -37,11 +37,11 @@
         >
       </div>
     </div>
-    <div :class="`w-[${state.double.width}%] xs:w-full relative`">
+    <div :class="imageClass">
       <DoubleRightPanel />
       <div
         class="uppercase text-[12px] font-medium hidden sm:flex text-white absolute right-5 top-5"
-        v-if="state.double.width === 50"
+        v-if="imageWidth === 50"
       >
         GIFT FOR HER
       </div>
@@ -50,7 +50,7 @@
 </template>
 
 <script>
-import { defineComponent, reactive } from "vue";
+import { defineComponent, reactive, computed, ref } from "vue";
 import DoubleRightPanel from "./DoubleRightPanel";
 
 export default defineComponent({
@@ -65,8 +65,15 @@ export default defineComponent({
         width: 50,
       },
     });
+    const imageWidth = ref(50);
 
-    return { state };
+    const imageClass = computed(() => {
+      return imageWidth.value === 75
+        ? `w-[75%] xs:w-full relative`
+        : `w-[50%] xs:w-full relative`;
+    });
+
+    return { state, imageClass, imageWidth };
   },
 });
 </script>
