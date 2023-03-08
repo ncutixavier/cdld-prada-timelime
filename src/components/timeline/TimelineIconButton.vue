@@ -6,14 +6,10 @@
       viewBox="0 0 24 24"
       stroke-width="1.5"
       :stroke="stroke"
-      class="w-[24px] h-[24px] cursor-pointer"
+      :class="`${size} cursor-pointer`"
       @click="click"
     >
-      <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        :d="icon"
-      />
+      <path stroke-linecap="round" stroke-linejoin="round" :d="icon" />
     </svg>
   </div>
 </template>
@@ -26,6 +22,7 @@ export default defineComponent({
     icon: { type: String, required: true },
     click: Function,
     stroke: String,
+    size: { type: String, default: "w-[24px] h-[24px]" },
   },
 });
 </script>

@@ -1,14 +1,22 @@
 <template>
-  <div class="min-h-screen"><double /></div>
+  <div class="min-h-screen"><double-component :data="getData" /></div>
 </template>
 
 <script>
-import { defineComponent } from "vue";
-import Double from "../components/double";
+import { defineComponent, computed } from "vue";
+import DoubleComponent from "../components/double";
+import doubleConfig from "@/configs/doubleConfig";
 
 export default defineComponent({
   components: {
-    Double,
+    DoubleComponent,
+  },
+  setup() {
+    const getData = computed(() => {
+      return doubleConfig;
+    });
+
+    return { getData };
   },
 });
 </script>
