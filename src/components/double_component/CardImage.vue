@@ -1,5 +1,8 @@
 <template>
-  <div class="h-screen w-full xs:h-[343px]">
+  <div
+    class="w-full"
+    :class="getImageHeight"
+  >
     <picture>
       <source media="(max-width:425px)" :srcset="imageMobile" />
       <source media="(max-width: 768px)" :srcset="imageTablet" />
@@ -13,7 +16,7 @@
 </template>
 
 <script>
-import { defineComponent } from "vue";
+import { defineComponent, computed } from "vue";
 
 export default defineComponent({
   props: {
@@ -27,8 +30,13 @@ export default defineComponent({
     imageDesktop: {
       type: String,
     },
-    handleNext: Function,
-    handlePrev: Function,
+    isFullScreen: Boolean,
+  },
+  setup(props) {
+    const getImageHeight = computed(() => {
+      return props.isFullScreen ? "h-screen" : "h-screen xs:h-[343px]";
+    });
+    return { getImageHeight };
   },
 });
 </script>
