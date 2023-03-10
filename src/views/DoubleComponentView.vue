@@ -1,11 +1,11 @@
 <template>
-  <div class="min-h-screen"><double-component :data="getData" /></div>
+  <double-component :data="getData" />
 </template>
 
 <script>
 import { defineComponent, computed } from "vue";
-import DoubleComponent from "../components/double";
-import doubleConfig from "@/configs/doubleConfig";
+import DoubleComponent from "../components/double_component";
+import doubleComponentConfig from "@/configs/doubleComponentConfig";
 
 export default defineComponent({
   components: {
@@ -13,7 +13,7 @@ export default defineComponent({
   },
   setup() {
     const getData = computed(() => {
-      return doubleConfig;
+      return doubleComponentConfig;
     });
 
     return { getData };
